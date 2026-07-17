@@ -1,0 +1,25 @@
+{
+  "name": "bidstorm",
+  "private": true,
+  "version": "1.0.0",
+  "type": "module",
+  "description": "Every player holds the same thirteen cards — spend them to win the prizes, and never spend more than you had to.",
+  "scripts": {
+    "dev": "vite",
+    "icons": "node scripts/gen-icons.mjs",
+    "build": "tsc && vite build",
+    "preview": "vite preview",
+    "test": "vitest run",
+    "test:watch": "vitest"
+  },
+  "dependencies": {
+    "trystero": "^0.21.0"
+  },
+  "devDependencies": {
+    "typescript": "^5.7.0",
+    "vite": "^6.0.0",
+    "vitest": "^2.0.0",
+    "@types/node": "^22.0.0",
+    "jsdom": "^25.0.0"
+  }
+}

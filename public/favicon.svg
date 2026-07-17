@@ -1,0 +1,16 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 64 64" width="64" height="64" role="img" aria-label="Bidstorm">
+  <!-- The mark: two cards played into the middle, one of them winning. Kept in
+       sync with scripts/gen-icons.mjs, which re-expresses these same shapes as
+       its own primitives so the favicon and the home-screen icons cannot drift
+       into two different logos. -->
+  <rect width="64" height="64" rx="14" fill="#0d1117"/>
+  <!-- the losing card, tilted back -->
+  <g transform="rotate(-14 24 35)">
+    <rect x="12" y="20" width="21" height="29" rx="3" fill="#56b4e9"/>
+  </g>
+  <!-- the winning card, upright and lit -->
+  <g transform="rotate(9 42 32)">
+    <rect x="31" y="15" width="22" height="31" rx="3" fill="#f4f6ff"/>
+    <rect x="34" y="18" width="16" height="25" rx="2" fill="#ffb347"/>
+  </g>
+</svg>

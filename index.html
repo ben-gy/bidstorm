@@ -1,0 +1,31 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no" />
+    <meta name="color-scheme" content="dark" />
+    <meta name="description" content="Every player holds the same thirteen cards — spend them to win the prizes, and never spend more than you had to." />
+    <meta property="og:title" content="Bidstorm" />
+    <meta property="og:description" content="Every player holds the same thirteen cards — spend them to win the prizes, and never spend more than you had to." />
+    <meta property="og:type" content="website" />
+    <!-- Every asset href here is RELATIVE. The game is served from a project
+         subpath in dev and from its own domain in production; a leading slash
+         resolves to the wrong place in one of the two, and a manifest whose
+         icons 404 fails to install with no visible error anywhere. -->
+    <link rel="icon" type="image/svg+xml" href="favicon.svg" />
+    <link rel="manifest" href="manifest.webmanifest" />
+    <meta name="theme-color" content="#0d1117" />
+    <!-- iOS IGNORES the manifest's icons. This 180x180 is the ONLY icon it will
+         use, and it must be opaque — iOS composites transparency onto black. -->
+    <link rel="apple-touch-icon" href="apple-touch-icon.png" />
+    <meta name="apple-mobile-web-app-capable" content="yes" />
+    <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent" />
+    <meta name="apple-mobile-web-app-title" content="Bidstorm" />
+    <title>Bidstorm</title>
+    <script defer src="https://static.cloudflareinsights.com/beacon.min.js" data-cf-beacon='{"token": "ba2bab2193ba42c1bea3d6714fcd0e28"}'></script>
+  </head>
+  <body>
+    <div id="app"></div>
+    <script type="module" src="/src/main.ts"></script>
+  </body>
+</html>
