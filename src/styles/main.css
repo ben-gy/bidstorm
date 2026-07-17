@@ -713,6 +713,13 @@ body {
 .hand {
   display: flex;
   gap: 4px;
+  /* `safe` is load-bearing, not decoration. Plain `center` centres the overflow
+     too, which puts the leftmost cards outside the scrollable origin where they
+     cannot be reached — a full 13-card hand would lose its low cards. `safe`
+     falls back to flex-start the moment the row overflows, and a browser that
+     does not understand it drops the whole declaration and left-aligns, which is
+     the same safe answer. */
+  justify-content: safe center;
   overflow-x: auto;
   padding: 6px 2px 10px;
   scrollbar-width: none;
@@ -727,6 +734,13 @@ body {
   flex: 1 1 0;
   min-width: 44px;
   min-height: 62px;
+  /* A card must never grow into the space a spent hand leaves behind.
+     `flex: 1 1 0` divides the whole row between however many cards are left, and
+     `aspect-ratio` then turns that width into HEIGHT — so on the last round the
+     final card was ~355px wide and ~500px tall: it swallowed the felt, hid the
+     prize you were bidding on, and pushed the Bid button off the bottom of the
+     screen. The cap is what keeps a card card-sized all the way to round 13. */
+  max-width: 64px;
   aspect-ratio: 5 / 7;
   border-radius: 8px;
   border: 1px solid #cfd6ee;
@@ -1375,6 +1389,11 @@ body {
 @media (min-width: 640px) {
   .bid-card {
     width: 54px;
+  }
+
+  /* Room to breathe on a desktop, still nowhere near swallowing the felt. */
+  .card {
+    max-width: 72px;
   }
 
   .player {
