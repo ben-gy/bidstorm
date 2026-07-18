@@ -1,0 +1,4 @@
+User-agent: *
+Allow: /
+
+Sitemap: https://bidstorm.benrichardson.dev/sitemap.xml
