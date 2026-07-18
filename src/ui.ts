@@ -13,6 +13,10 @@
  */
 
 import { currentPot, currentPrize, upcomingPrizes, type GameState } from './game';
+import { makeDraggable } from './engine/drag';
+
+/** Pull a card up this far (px) to bid it outright. */
+const PLAY_DY = 55;
 
 /**
  * Okabe–Ito. Chosen because it is the palette designed for deuteranopia and
@@ -62,6 +66,8 @@ export interface GameUiConfig {
   selfSeat: number;
   onArm: (card: number) => void;
   onBid: () => void;
+  /** Play a card outright (arm + commit) — the drag / flick-up gesture. */
+  onPlay: (card: number) => void;
   onMenu: () => void;
   onMute: () => void;
   muted: () => boolean;
@@ -270,7 +276,32 @@ export function createGameUi(cfg: GameUiConfig): GameUi {
         })
         .join('');
       handEl.querySelectorAll<HTMLButtonElement>('.card').forEach((btn) => {
-        btn.addEventListener('click', () => cfg.onArm(Number(btn.dataset.card)));
+        const card = Number(btn.dataset.card);
+        // Tap still arms (then Bid), but a card also wants to be PLAYED with a
+        // gesture: lift it up toward the felt and let go — or flick it up — to bid
+        // it outright. Horizontal stays with the browser (pan-x) so a long hand
+        // still scrolls; only the upward pull is ours.
+        const reset = (): void => {
+          btn.classList.remove('is-dragging', 'will-play');
+          btn.style.transform = '';
+        };
+        makeDraggable(btn, {
+          onTap: () => cfg.onArm(card),
+          onDragStart: () => btn.classList.add('is-dragging'),
+          onDragMove: (_dx, dy) => {
+            btn.style.transform = `translateY(${Math.min(0, dy)}px)`;
+            btn.classList.toggle('will-play', dy < -PLAY_DY);
+          },
+          onDrop: (_dx, dy) => {
+            reset();
+            if (dy < -PLAY_DY) cfg.onPlay(card);
+          },
+          onSwipe: (dir) => {
+            reset();
+            if (dir === 'up') cfg.onPlay(card);
+          },
+          onCancel: reset,
+        });
       });
     }
 

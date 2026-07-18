@@ -749,6 +749,9 @@ body {
   font-weight: 800;
   display: grid;
   place-items: center;
+  /* pan-x: the browser keeps horizontal scrolling of a long hand; the UPWARD
+     pull (drag/flick a card up to bid it) is ours. */
+  touch-action: pan-x;
   transition: transform 0.15s cubic-bezier(0.2, 1.4, 0.4, 1), box-shadow 0.15s ease;
 }
 
@@ -758,6 +761,20 @@ body {
 
 .card:hover:not(:disabled) {
   transform: translateY(-6px);
+}
+
+/* Following the finger — no transition (that would lag), lifted above its
+   neighbours. Removing the class on release lets the snap-back animate. */
+.card.is-dragging {
+  transition: none;
+  z-index: 10;
+  box-shadow: 0 14px 30px rgb(0 0 0 / 0.4);
+}
+
+/* Pulled up far enough that letting go will bid it. */
+.card.will-play {
+  border-color: var(--gold);
+  box-shadow: 0 0 0 3px var(--gold), 0 18px 34px rgb(255 179 71 / 45%);
 }
 
 .card.is-armed {

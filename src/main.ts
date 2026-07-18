@@ -423,6 +423,16 @@ function startMatch(args: StartMatchArgs): void {
         repaint();
       }
     },
+    // Drag / flick a card up to bid it outright — arm and commit in one gesture.
+    onPlay: (card) => {
+      if (!match || match.g.phase !== 'bidding') return;
+      if (selfSeat < 0 || match.g.bids[selfSeat] !== null) return;
+      if (match.submit(card)) {
+        sfx.play('commit');
+        armed = null;
+        repaint();
+      }
+    },
     onMenu: () => showMenu(),
     onMute: () => {
       sfx.setMuted(!sfx.muted());
