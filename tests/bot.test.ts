@@ -19,7 +19,7 @@ import {
   type GameState,
 } from '../src/game';
 import { botBid, potRank, pointsLeft, remainingPrizes, BOT_PROFILES, type Difficulty } from '../src/bot';
-import { makeRng } from '../src/engine/rng';
+import { makeRng } from '@ben-gy/game-engine/rng';
 
 /** Run a whole solo match of bots-vs-bots and hand back the finished state. */
 function autoMatch(seed: number, n: number, diff: Difficulty): GameState {

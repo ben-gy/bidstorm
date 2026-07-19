@@ -12,7 +12,7 @@
  */
 
 import { describe, expect, it } from 'vitest';
-import { hashSeed, makeRng, pick, randInt, shuffle } from '../src/engine/rng';
+import { hashSeed, makeRng, pick, randInt, shuffle } from '@ben-gy/game-engine/rng';
 import { createGame, FULL_HAND } from '../src/game';
 
 describe('makeRng — two peers, one seed', () => {

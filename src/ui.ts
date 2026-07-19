@@ -13,7 +13,7 @@
  */
 
 import { currentPot, currentPrize, upcomingPrizes, type GameState } from './game';
-import { makeDraggable } from './engine/drag';
+import { makeDraggable } from '@ben-gy/game-engine/drag';
 
 /** Pull a card up this far (px) to bid it outright. */
 const PLAY_DY = 55;

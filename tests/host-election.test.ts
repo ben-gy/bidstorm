@@ -20,7 +20,7 @@
  */
 
 import { beforeEach, describe, expect, it, vi } from 'vitest';
-import type { Net } from '../src/engine/net';
+import type { Net } from '@ben-gy/game-engine/net';
 
 interface Wire {
   peers: Map<string, Room>;
@@ -107,7 +107,7 @@ async function peer(id: string, opts: { claimHost?: boolean } = {}): Promise<Net
       return room;
     },
   }));
-  const mod = await import('../src/engine/net');
+  const mod = await import('@ben-gy/game-engine/net');
   return mod.createNet({ appId: 'test', roomId: 'R', claimHost: opts.claimHost });
 }
 
@@ -178,8 +178,11 @@ describe('host election — nobody hosts a mesh that has not formed', () => {
     const b = await peer('b');
     connect('a', 'b');
     // Neither claimed (both arrived via a link into an empty room). They must
-    // not deadlock waiting for an incumbent that does not exist.
-    vi.advanceTimersByTime(2600);
+    // not deadlock waiting for an incumbent that does not exist. The window is
+    // 6s now, not 2.5s: Nostr discovery plus ICE on a phone routinely takes
+    // longer than 2.5s, and a joiner that gave up that early self-elected on an
+    // empty roster and then stole a live room.
+    vi.advanceTimersByTime(6100);
     expect(a.isHost()).toBe(true); // min-id, agreed by both
     expect(b.isHost()).toBe(false);
     expect(b.host()).toBe('a');

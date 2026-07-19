@@ -941,10 +941,13 @@ body {
   line-height: 1.5;
 }
 
+/* The secrecy disclosure. It is a sibling of the lobby rather than part of it,
+   because createLobby owns its container's innerHTML and repaints it. */
 .lobby-note {
-  margin: 8px 0 0;
+  margin: 10px 0 0;
   color: var(--muted);
   font-size: 12px;
+  text-align: center;
 }
 
 .lobby-code {
@@ -1088,6 +1091,23 @@ body {
   to {
     transform: rotate(360deg);
   }
+}
+
+/* A peer that minted a code and has been sitting alone is offered the room. The
+   engine refuses to self-elect on a roster of one — silence means no mesh, not
+   an empty room — so this is the explicit, human way out of the spinner. It
+   stacks rather than sits in a row: the sentence is the point, not the button. */
+.lobby-offer {
+  flex-direction: column;
+  gap: 10px;
+  padding: 12px;
+  border: 1px solid var(--line);
+  border-radius: 10px;
+  line-height: 1.45;
+}
+
+.lobby-offer .lobby-host {
+  width: 100%;
 }
 
 .lobby-actions {

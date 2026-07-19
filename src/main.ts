@@ -5,9 +5,9 @@
  *
  * The one structural rule here: a live-P2P session calls createNet ONCE and
  * holds the room until the player walks back to the menu. Every rematch happens
- * inside that room via engine/rematch.ts. Leaving and rejoining to "reset" is
- * the bug that shipped twice in this factory; engine/net.ts now throws if you
- * try, and the shape of this file is what makes it never come up.
+ * inside that room via @ben-gy/game-engine/rematch. Leaving and rejoining to
+ * "reset" is the bug that shipped twice in this factory; the engine's net.ts now
+ * throws if you try, and the shape of this file is what makes it never come up.
  */
 
 // mobile.css FIRST — it is the baseline main.css is allowed to override, not
@@ -19,20 +19,21 @@ mountFeedback();
 
 import './styles/mobile.css';
 import './styles/main.css';
-import { hardenViewport } from './engine/mobile';
-import { createStore } from './engine/storage';
+import { hardenViewport } from '@ben-gy/game-engine/mobile';
+import { createStore } from '@ben-gy/game-engine/storage';
 import { createSfx } from './engine/sound';
-import { createNet, type Net } from './engine/net';
-import { createRounds, type Rounds, type RoundPlayer } from './engine/rematch';
+import { createNet, roomAppId, setTurnConfig, type Net } from '@ben-gy/game-engine/net';
+import { getTurnConfig } from '@ben-gy/game-engine/turn';
+import { createRounds, type Rounds, type RoundPlayer } from '@ben-gy/game-engine/rematch';
 import {
   clearRoomInUrl,
   createLobby,
   createRoomEntry,
   normalizeRoomCode,
   setRoomInUrl,
-} from './engine/lobby';
-import { resolveName, withName } from './engine/identity';
-import { newSeed } from './engine/rng';
+} from '@ben-gy/game-engine/lobby';
+import { resolveName, withName } from '@ben-gy/game-engine/identity';
+import { newSeed } from '@ben-gy/game-engine/rng';
 import { Match, CH_BID, CH_SNAP, type BidMsg } from './match';
 import { MAX_PLAYERS, MIN_PLAYERS, type GameState, type Snapshot } from './game';
 import { DEFAULT_MODE, modeOf, MODES, pointsOf, roundsOf, type ModeId } from './modes';
@@ -48,6 +49,20 @@ const HUB = 'https://hub.benrichardson.dev';
 // Before anything renders: iOS ignores the viewport meta's user-scalable=no, so
 // a double-tap or a pinch zooms into a live table with no way back out.
 hardenViewport();
+
+/**
+ * TURN credentials, fetched at BOOT rather than at join time.
+ *
+ * Without relays, ICE is STUN-only, and two phones on carrier CGNAT see each
+ * other in signaling while the data channel never opens — the "I'm in the room
+ * and nobody's here" report. And it has to be set before the FIRST mesh on the
+ * page: Trystero builds one global pool of pre-made peer connections from
+ * whichever joinRoom fires first, so a later call leaves the initiating half of
+ * every pair turnless. Starting the fetch here means it is long resolved by the
+ * time anyone taps "Play with friends"; joinRoom awaits it anyway, and
+ * getTurnConfig fails open to [] so a dead endpoint can never block a join.
+ */
+const turnReady: Promise<void> = getTurnConfig().then(setTurnConfig);
 
 const store = createStore(SLUG);
 const sfx = createSfx(store.get('muted', false));
@@ -692,10 +707,14 @@ async function joinRoom(code: string, created: boolean): Promise<void> {
 
   if (net) await leaveRoom();
 
+  // Already resolved in practice — see turnReady. Awaited rather than assumed so
+  // the very first mesh this page builds is the one that carries the relays.
+  await turnReady;
+
   // Wired with its handlers, never bare: onHostChange IS the host transfer, and
   // a live-P2P game that omits it cannot survive its host leaving.
   net = createNet(
-    { appId: SLUG, roomId: code, claimHost: created },
+    { appId: roomAppId(SLUG), roomId: code, claimHost: created },
     {
       onHostChange: (_id, isSelfHost) => {
         match?.setHost(isSelfHost);
@@ -714,7 +733,16 @@ async function joinRoom(code: string, created: boolean): Promise<void> {
     // because a mode each peer read from its own menu is a deck size two peers
     // can disagree about — the same seed dealing two different games.
     roundOpts: () => ({ mode: storedMode() }),
-    onRound: (info) => startNetRound(info.seed, info.players, modeOf(info.opts.mode).id),
+    // rematch.ts is engine code and hands opts back as `unknown` — it cannot know
+    // what a game puts in there. modeOf() validates whatever arrives, so a start
+    // from an older or malformed peer falls back to the default deck rather than
+    // dealing a hand nobody agrees on.
+    onRound: (info) =>
+      startNetRound(
+        info.seed,
+        info.players,
+        modeOf((info.opts as { mode?: string } | null)?.mode ?? '').id,
+      ),
   });
 
   showLobby();
@@ -723,7 +751,13 @@ async function joinRoom(code: string, created: boolean): Promise<void> {
 function showLobby(): void {
   clearScreen();
   if (!net || !rounds) return showMenu();
-  app.innerHTML = `<div class="screen entry-screen"><main class="main-content" data-el="slot"></main>${footer()}</div>`;
+  // The secrecy disclosure sits OUTSIDE the lobby's container: createLobby owns
+  // that element's innerHTML and repaints it, so anything the game wants to keep
+  // on screen has to be a sibling.
+  app.innerHTML = `<div class="screen entry-screen"><main class="main-content">
+      <div data-el="slot"></div>
+      <p class="lobby-note">Bids are collected by the host and turned over together — see About.</p>
+    </main>${footer()}</div>`;
   lobby = createLobby({
     container: app.querySelector<HTMLElement>('[data-el="slot"]')!,
     net,
@@ -731,7 +765,6 @@ function showLobby(): void {
     roomCode,
     minPlayers: MIN_PLAYERS,
     maxPlayers: MAX_PLAYERS,
-    note: 'Bids are collected by the host and turned over together — see About.',
     onCancel: () => showMenu(),
   });
 }

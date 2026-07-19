@@ -1,5 +1,5 @@
 import { describe, it, expect } from 'vitest';
-import { classifyRelease, type GestureThresholds } from '../src/engine/drag';
+import { classifyRelease, type GestureThresholds } from '@ben-gy/game-engine/drag';
 
 // The verified defaults from patterns/MOBILE_CONTROLS.md.
 const T: GestureThresholds = { tapSlop: 3, swipeDist: 50, swipeVel: 0.5, swipeMaxMs: 250 };

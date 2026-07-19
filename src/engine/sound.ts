@@ -1,8 +1,16 @@
 /**
  * sound.ts — procedural sound effects via the Web Audio API. Zero asset files.
  *
- * Copied from the gh-game-factory patterns/ engine; PATCHES extended with
- * Bidstorm's own cues. Call sfx.unlock() from the first user gesture.
+ * THE ONE FILE THAT STAYS GAME-SIDE. Everything else under src/engine/ moved to
+ * @ben-gy/game-engine at v1.1.0; this did not, because its whole content is
+ * Bidstorm-specific. SfxName is a closed union and the engine's is a platformer
+ * vocabulary — coin, jump, explosion, powerup — with no hook for adding to it.
+ * A card game needs deal, flip, commit, tie, tick and count instead, so
+ * importing the engine's would mean calling sfx.play('coin') when a card lands.
+ * The engine gains an extensible patch table one day; until then this is a fork
+ * of a table, not a fork of any netcode, and it holds none of the v1.1.0 fixes.
+ *
+ * Call sfx.unlock() from the first user gesture — browsers block audio until then.
  */
 
 export type SfxName =
