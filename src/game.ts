@@ -107,7 +107,7 @@ export function createGame(seed: number, n: number, mode: ModeId = DEFAULT_MODE)
   };
 }
 
-/** mulberry32 + Fisher–Yates, matching engine/rng.ts exactly. */
+/** mulberry32 + Fisher-Yates, matching the engine's rng.ts exactly. */
 function shufflePrizes(seed: number, mode: ModeId): number[] {
   let a = seed >>> 0;
   const rng = (): number => {

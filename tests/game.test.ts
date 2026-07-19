@@ -8,7 +8,7 @@
  */
 
 import { describe, expect, it } from 'vitest';
-import { makeRng } from '../src/engine/rng';
+import { makeRng } from '@ben-gy/game-engine/rng';
 import {
   allIn,
   autoBidRest,

@@ -2,7 +2,7 @@
  * match.ts — one match of Bidstorm, driven by whoever is currently the host.
  *
  * This is the glue between the pure rules (game.ts) and the peer mesh
- * (engine/net.ts), and it is deliberately transport-agnostic: it is handed
+ * (@ben-gy/game-engine/net), and it is deliberately transport-agnostic: it is handed
  * `send` functions and a clock rather than a Net. That is what lets the
  * host-transfer takeover — the thing that has broken twice in this factory — be
  * proven by a unit test with no relay, no browser, and no timing luck.
@@ -41,7 +41,7 @@ import {
 } from './game';
 import { botBid, type Difficulty, type Style } from './bot';
 import { modeOf, type ModeId } from './modes';
-import { makeRng, type Rng } from './engine/rng';
+import { makeRng, type Rng } from '@ben-gy/game-engine/rng';
 
 /** Channel names. Both well inside Trystero's 12-byte limit, and distinct from
  *  rematch.ts's 'rv'/'rs'/'rq' — net.channel() fans out, so a collision would

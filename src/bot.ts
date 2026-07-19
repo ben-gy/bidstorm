@@ -25,7 +25,7 @@
  */
 
 import { currentPot, ROUNDS, type GameState } from './game';
-import { randInt, type Rng } from './engine/rng';
+import { randInt, type Rng } from '@ben-gy/game-engine/rng';
 
 export type Difficulty = 'casual' | 'sharp' | 'ruthless';
 
