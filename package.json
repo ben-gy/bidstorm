@@ -4,6 +4,7 @@
   "version": "1.0.0",
   "type": "module",
   "description": "Every player holds the same thirteen cards — spend them to win the prizes, and never spend more than you had to.",
+  "license": "AGPL-3.0-or-later",
   "scripts": {
     "dev": "vite",
     "icons": "node scripts/gen-icons.mjs",
